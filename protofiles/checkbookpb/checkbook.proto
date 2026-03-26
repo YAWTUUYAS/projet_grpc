@@ -1,0 +1,21 @@
+syntax="proto3";
+
+package protofiles;
+option go_package="protofiles/checkbook";
+
+message CheckbookRequest{
+    int32 nbPage = 1;
+    string accountId = 2;
+    string creationDate = 3;
+}
+
+message CheckbookResponse{
+    int32 nbPage = 1;
+    string accountId = 2;
+    string creationDate = 3;
+    int32 id = 4;
+}
+
+service CheckbookService{
+    rpc CreateCheckbook(CheckbookRequest) returns (CheckbookResponse){}
+}

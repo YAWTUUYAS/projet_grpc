@@ -19,14 +19,14 @@ func main() {
 	defer cc.Close()
 	c := checkbookpb.NewCheckbookServiceClient(cc)
 
-	createCheckbook(25, "account_001", "25/03/2026", c)
-	createCheckbook(50, "account_002", "26/03/2026", c)
+	createCheckbook(25, "account_001", c)
+	createCheckbook(50, "account_002", c)
 }
 
-func createCheckbook(nbPage int32, accountId, creationDate string, c checkbookpb.CheckbookServiceClient) {
+func createCheckbook(nbPage int32, accountId string, c checkbookpb.CheckbookServiceClient) {
 	log.Println("creating checkbook")
 
-	res, err := c.CreateCheckbook(context.Background(), &checkbookpb.CheckbookRequest{NbPage: nbPage, AccountId: accountId, CreationDate: creationDate})
+	res, err := c.CreateCheckbook(context.Background(), &checkbookpb.CheckbookRequest{NbPage: nbPage, AccountId: accountId})
 
 	if err != nil {
 		log.Println("error: ", err)

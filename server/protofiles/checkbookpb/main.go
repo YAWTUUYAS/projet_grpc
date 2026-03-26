@@ -9,19 +9,22 @@ import (
 	checkbookpb "projet_grpc/server/protofiles/checkbook"
 
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-type server struct{}
+type server struct {
+	checkbookpb.UnimplementedCheckbookServiceServer
+}
 
 func (s server) CreateCheckbook(ctx context.Context, req *checkbookpb.CheckbookRequest) (*checkbookpb.CheckbookResponse, error) {
 	log.Println("Number Of Pages:", req.NbPage)
 	log.Println("Account ID:", req.AccountId)
-	log.Println("Creation Date:", req.CreationDate)
-
+	creationDate := timestamppb.Now()
+	log.Println("Creation Date:", creationDate)
 	var checkbook_id int32 = int32(rand.Intn(1000))
 	log.Println("Checkbook Id:", checkbook_id)
 
-	return &checkbookpb.CheckbookResponse{NbPage: req.NbPage, AccountId: req.AccountId, CreationDate: req.CreationDate, Id: checkbook_id}, nil
+	return &checkbookpb.CheckbookResponse{NbPage: req.NbPage, AccountId: req.AccountId, CreationDate: creationDate, Id: checkbook_id}, nil
 }
 
 func main() {

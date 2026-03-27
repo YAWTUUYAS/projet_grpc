@@ -14,6 +14,7 @@ import (
 
 type server struct {
 	checkbookpb.UnimplementedCheckbookServiceServer
+	db map[int32]*checkbookpb.CheckbookResponse
 }
 
 func getNbPages(p checkbookpb.Pages) int32 {
@@ -27,7 +28,7 @@ func getNbPages(p checkbookpb.Pages) int32 {
 	}
 }
 
-func (s server) CreateCheckbook(ctx context.Context, req *checkbookpb.CheckbookRequest) (*checkbookpb.CheckbookResponse, error) {
+func (s *server) CreateCheckbook(ctx context.Context, req *checkbookpb.CheckbookRequest) (*checkbookpb.CheckbookResponse, error) {
 
 	pagesEnum := req.GetNbPage()
 	nbPages := getNbPages(pagesEnum)
@@ -42,7 +43,13 @@ func (s server) CreateCheckbook(ctx context.Context, req *checkbookpb.CheckbookR
 	checkbookID := int32(rand.Intn(1000))
 	log.Println("Checkbook Id:", checkbookID)
 
-	return &checkbookpb.CheckbookResponse{NbPage: pagesEnum, AccountId: req.GetAccountId(), CreationDate: creationDate, Id: checkbookID}, nil
+	checkbook := &checkbookpb.CheckbookResponse{NbPage: pagesEnum, AccountId: req.GetAccountId(), CreationDate: creationDate, Id: checkbookID}
+
+	s.db[checkbookID] = checkbook
+
+	log.Println("Saved in db: ", checkbookID)
+
+	return checkbook, nil
 }
 
 func main() {
@@ -54,7 +61,12 @@ func main() {
 
 	fmt.Println("starting server")
 	s := grpc.NewServer()
-	checkbookpb.RegisterCheckbookServiceServer(s, server{})
+
+	srv := &server{
+		db: make(map[int32]*checkbookpb.CheckbookResponse),
+	}
+
+	checkbookpb.RegisterCheckbookServiceServer(s, srv)
 
 	if err := s.Serve(listener); err != nil {
 		panic(err)

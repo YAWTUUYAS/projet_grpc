@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	checkbookpb "projet_grpc/server/protofiles/checkbook"
+	checkbookpb "projet_grpc/protofiles/checkbookpb"
 
 	"google.golang.org/grpc"
 )
@@ -19,14 +19,17 @@ func main() {
 	defer cc.Close()
 	c := checkbookpb.NewCheckbookServiceClient(cc)
 
-	createCheckbook(25, "account_001", c)
-	createCheckbook(50, "account_002", c)
+	createCheckbook(checkbookpb.Pages_TWENTY_FIVE, "account_001", c)
+	createCheckbook(checkbookpb.Pages_FIFTY, "account_002", c)
 }
 
-func createCheckbook(nbPage int32, accountId string, c checkbookpb.CheckbookServiceClient) {
+func createCheckbook(nbPage checkbookpb.Pages, accountId string, c checkbookpb.CheckbookServiceClient) {
 	log.Println("creating checkbook")
 
-	res, err := c.CreateCheckbook(context.Background(), &checkbookpb.CheckbookRequest{NbPage: nbPage, AccountId: accountId})
+	res, err := c.CreateCheckbook(context.Background(), &checkbookpb.CheckbookRequest{
+		NbPage:    nbPage,
+		AccountId: accountId,
+	})
 
 	if err != nil {
 		log.Println("error: ", err)
@@ -34,5 +37,4 @@ func createCheckbook(nbPage int32, accountId string, c checkbookpb.CheckbookServ
 	}
 
 	log.Println(res.AccountId, res.CreationDate, res.Id, res.NbPage)
-
 }

@@ -6,7 +6,7 @@ import (
 	"log"
 	"math/rand"
 	"net"
-	checkbookpb "projet_grpc/server/protofiles/checkbook"
+	checkbookpb "projet_grpc/protofiles/checkbookpb"
 
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -16,15 +16,33 @@ type server struct {
 	checkbookpb.UnimplementedCheckbookServiceServer
 }
 
+func getNbPages(p checkbookpb.Pages) int32 {
+	switch p {
+	case checkbookpb.Pages_TWENTY_FIVE:
+		return 25
+	case checkbookpb.Pages_FIFTY:
+		return 50
+	default:
+		return 0
+	}
+}
+
 func (s server) CreateCheckbook(ctx context.Context, req *checkbookpb.CheckbookRequest) (*checkbookpb.CheckbookResponse, error) {
-	log.Println("Number Of Pages:", req.NbPage)
-	log.Println("Account ID:", req.AccountId)
+
+	pagesEnum := req.GetNbPage()
+	nbPages := getNbPages(pagesEnum)
+
+	log.Println("Pages enum:", pagesEnum)
+	log.Println("Number Of Pages:", nbPages)
+	log.Println("Account ID:", req.GetAccountId())
+
 	creationDate := timestamppb.Now()
 	log.Println("Creation Date:", creationDate)
-	var checkbook_id int32 = int32(rand.Intn(1000))
-	log.Println("Checkbook Id:", checkbook_id)
 
-	return &checkbookpb.CheckbookResponse{NbPage: req.NbPage, AccountId: req.AccountId, CreationDate: creationDate, Id: checkbook_id}, nil
+	checkbookID := int32(rand.Intn(1000))
+	log.Println("Checkbook Id:", checkbookID)
+
+	return &checkbookpb.CheckbookResponse{NbPage: pagesEnum, AccountId: req.GetAccountId(), CreationDate: creationDate, Id: checkbookID}, nil
 }
 
 func main() {

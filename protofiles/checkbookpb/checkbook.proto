@@ -1,23 +1,29 @@
-syntax="proto3";
+syntax = "proto3";
 
 package protofiles;
 
 import "google/protobuf/timestamp.proto";
 
-option go_package="protofiles/checkbook";
+option go_package = "projet_grpc/server/protofiles/checkbook";
 
-message CheckbookRequest{
-    int32 nbPage = 1;
+enum Pages {
+    PAGES_UNSPECIFIED = 0;
+    TWENTY_FIVE = 1;
+    FIFTY = 2;
+}
+
+message CheckbookRequest {
+    Pages nbPage = 1;
     string accountId = 2;
 }
 
-message CheckbookResponse{
-    int32 nbPage = 1;
+message CheckbookResponse {
+    Pages nbPage = 1;
     string accountId = 2;
     google.protobuf.Timestamp creationDate = 3;
     int32 id = 4;
 }
 
-service CheckbookService{
-    rpc CreateCheckbook(CheckbookRequest) returns (CheckbookResponse){}
+service CheckbookService {
+    rpc CreateCheckbook(CheckbookRequest) returns (CheckbookResponse);
 }

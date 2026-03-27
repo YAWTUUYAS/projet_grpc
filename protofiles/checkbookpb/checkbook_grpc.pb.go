@@ -39,21 +39,19 @@ func (c *checkbookServiceClient) CreateCheckbook(ctx context.Context, in *Checkb
 }
 
 // CheckbookServiceServer is the server API for CheckbookService service.
-// All implementations must embed UnimplementedCheckbookServiceServer
+// All implementations should embed UnimplementedCheckbookServiceServer
 // for forward compatibility
 type CheckbookServiceServer interface {
 	CreateCheckbook(context.Context, *CheckbookRequest) (*CheckbookResponse, error)
-	mustEmbedUnimplementedCheckbookServiceServer()
 }
 
-// UnimplementedCheckbookServiceServer must be embedded to have forward compatible implementations.
+// UnimplementedCheckbookServiceServer should be embedded to have forward compatible implementations.
 type UnimplementedCheckbookServiceServer struct {
 }
 
 func (UnimplementedCheckbookServiceServer) CreateCheckbook(context.Context, *CheckbookRequest) (*CheckbookResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateCheckbook not implemented")
 }
-func (UnimplementedCheckbookServiceServer) mustEmbedUnimplementedCheckbookServiceServer() {}
 
 // UnsafeCheckbookServiceServer may be embedded to opt out of forward compatibility for this service.
 // Use of this interface is not recommended, as added methods to CheckbookServiceServer will

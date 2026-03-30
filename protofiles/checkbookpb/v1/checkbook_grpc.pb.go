@@ -18,8 +18,8 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CheckbookServiceClient interface {
-	CreateCheckbook(ctx context.Context, in *CheckbookRequest, opts ...grpc.CallOption) (*CheckbookResponse, error)
-	GetCheckbooks(ctx context.Context, in *AccountId, opts ...grpc.CallOption) (*CheckbookList, error)
+	CreateCheckbook(ctx context.Context, in *CreateCheckbookRequest, opts ...grpc.CallOption) (*CreateCheckbookResponse, error)
+	GetCheckbooks(ctx context.Context, in *GetCheckbooksRequest, opts ...grpc.CallOption) (*GetCheckbooksResponse, error)
 }
 
 type checkbookServiceClient struct {
@@ -30,18 +30,18 @@ func NewCheckbookServiceClient(cc grpc.ClientConnInterface) CheckbookServiceClie
 	return &checkbookServiceClient{cc}
 }
 
-func (c *checkbookServiceClient) CreateCheckbook(ctx context.Context, in *CheckbookRequest, opts ...grpc.CallOption) (*CheckbookResponse, error) {
-	out := new(CheckbookResponse)
-	err := c.cc.Invoke(ctx, "/protofiles.CheckbookService/CreateCheckbook", in, out, opts...)
+func (c *checkbookServiceClient) CreateCheckbook(ctx context.Context, in *CreateCheckbookRequest, opts ...grpc.CallOption) (*CreateCheckbookResponse, error) {
+	out := new(CreateCheckbookResponse)
+	err := c.cc.Invoke(ctx, "/protofiles.checkbookpb.v1.CheckbookService/CreateCheckbook", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *checkbookServiceClient) GetCheckbooks(ctx context.Context, in *AccountId, opts ...grpc.CallOption) (*CheckbookList, error) {
-	out := new(CheckbookList)
-	err := c.cc.Invoke(ctx, "/protofiles.CheckbookService/GetCheckbooks", in, out, opts...)
+func (c *checkbookServiceClient) GetCheckbooks(ctx context.Context, in *GetCheckbooksRequest, opts ...grpc.CallOption) (*GetCheckbooksResponse, error) {
+	out := new(GetCheckbooksResponse)
+	err := c.cc.Invoke(ctx, "/protofiles.checkbookpb.v1.CheckbookService/GetCheckbooks", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -52,18 +52,18 @@ func (c *checkbookServiceClient) GetCheckbooks(ctx context.Context, in *AccountI
 // All implementations should embed UnimplementedCheckbookServiceServer
 // for forward compatibility
 type CheckbookServiceServer interface {
-	CreateCheckbook(context.Context, *CheckbookRequest) (*CheckbookResponse, error)
-	GetCheckbooks(context.Context, *AccountId) (*CheckbookList, error)
+	CreateCheckbook(context.Context, *CreateCheckbookRequest) (*CreateCheckbookResponse, error)
+	GetCheckbooks(context.Context, *GetCheckbooksRequest) (*GetCheckbooksResponse, error)
 }
 
 // UnimplementedCheckbookServiceServer should be embedded to have forward compatible implementations.
 type UnimplementedCheckbookServiceServer struct {
 }
 
-func (UnimplementedCheckbookServiceServer) CreateCheckbook(context.Context, *CheckbookRequest) (*CheckbookResponse, error) {
+func (UnimplementedCheckbookServiceServer) CreateCheckbook(context.Context, *CreateCheckbookRequest) (*CreateCheckbookResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateCheckbook not implemented")
 }
-func (UnimplementedCheckbookServiceServer) GetCheckbooks(context.Context, *AccountId) (*CheckbookList, error) {
+func (UnimplementedCheckbookServiceServer) GetCheckbooks(context.Context, *GetCheckbooksRequest) (*GetCheckbooksResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCheckbooks not implemented")
 }
 
@@ -79,7 +79,7 @@ func RegisterCheckbookServiceServer(s grpc.ServiceRegistrar, srv CheckbookServic
 }
 
 func _CheckbookService_CreateCheckbook_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CheckbookRequest)
+	in := new(CreateCheckbookRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -88,16 +88,16 @@ func _CheckbookService_CreateCheckbook_Handler(srv interface{}, ctx context.Cont
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/protofiles.CheckbookService/CreateCheckbook",
+		FullMethod: "/protofiles.checkbookpb.v1.CheckbookService/CreateCheckbook",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CheckbookServiceServer).CreateCheckbook(ctx, req.(*CheckbookRequest))
+		return srv.(CheckbookServiceServer).CreateCheckbook(ctx, req.(*CreateCheckbookRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _CheckbookService_GetCheckbooks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AccountId)
+	in := new(GetCheckbooksRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -106,10 +106,10 @@ func _CheckbookService_GetCheckbooks_Handler(srv interface{}, ctx context.Contex
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/protofiles.CheckbookService/GetCheckbooks",
+		FullMethod: "/protofiles.checkbookpb.v1.CheckbookService/GetCheckbooks",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CheckbookServiceServer).GetCheckbooks(ctx, req.(*AccountId))
+		return srv.(CheckbookServiceServer).GetCheckbooks(ctx, req.(*GetCheckbooksRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -118,7 +118,7 @@ func _CheckbookService_GetCheckbooks_Handler(srv interface{}, ctx context.Contex
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var CheckbookService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "protofiles.CheckbookService",
+	ServiceName: "protofiles.checkbookpb.v1.CheckbookService",
 	HandlerType: (*CheckbookServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -131,5 +131,5 @@ var CheckbookService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "protofiles/checkbookpb/checkbook.proto",
+	Metadata: "protofiles/checkbookpb/v1/checkbook.proto",
 }

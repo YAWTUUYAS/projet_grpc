@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	checkbookpb "projet_grpc/protofiles/checkbookpb"
+	checkbookpb "projet_grpc/protofiles/checkbookpb/v1"
 
 	"google.golang.org/grpc"
 )
@@ -20,8 +20,8 @@ func main() {
 
 	c := checkbookpb.NewCheckbookServiceClient(cc)
 
-	createCheckbook(checkbookpb.Pages_TWENTY_FIVE, "account_001", c)
-	createCheckbook(checkbookpb.Pages_FIFTY, "account_001", c)
+	createCheckbook(checkbookpb.Pages_PAGES_TWENTY_FIVE, "account_001", c)
+	createCheckbook(checkbookpb.Pages_PAGES_FIFTY, "account_001", c)
 
 	getCheckbooks("account_001", c)
 }
@@ -29,7 +29,7 @@ func main() {
 func createCheckbook(nbPage checkbookpb.Pages, accountId string, c checkbookpb.CheckbookServiceClient) {
 	log.Println("creating checkbook")
 
-	res, err := c.CreateCheckbook(context.Background(), &checkbookpb.CheckbookRequest{
+	res, err := c.CreateCheckbook(context.Background(), &checkbookpb.CreateCheckbookRequest{
 		NbPage:    nbPage,
 		AccountId: accountId,
 	})
@@ -45,7 +45,7 @@ func createCheckbook(nbPage checkbookpb.Pages, accountId string, c checkbookpb.C
 func getCheckbooks(accountId string, c checkbookpb.CheckbookServiceClient) {
 	log.Println("fetching checkbooks for:", accountId)
 
-	res, err := c.GetCheckbooks(context.Background(), &checkbookpb.AccountId{
+	res, err := c.GetCheckbooks(context.Background(), &checkbookpb.GetCheckbooksRequest{
 		AccountId: accountId,
 	})
 

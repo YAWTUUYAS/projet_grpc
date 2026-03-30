@@ -6,7 +6,7 @@ import (
 	"log"
 	"math/rand"
 	"net"
-	checkbookpb "projet_grpc/protofiles/checkbookpb"
+	checkbookpb "projet_grpc/protofiles/checkbookpb/v1"
 
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -14,21 +14,21 @@ import (
 
 type server struct {
 	checkbookpb.UnimplementedCheckbookServiceServer
-	db map[int32]*checkbookpb.CheckbookResponse
+	db map[int32]*checkbookpb.CreateCheckbookResponse
 }
 
 func getNbPages(p checkbookpb.Pages) int32 {
 	switch p {
-	case checkbookpb.Pages_TWENTY_FIVE:
+	case checkbookpb.Pages_PAGES_TWENTY_FIVE:
 		return 25
-	case checkbookpb.Pages_FIFTY:
+	case checkbookpb.Pages_PAGES_FIFTY:
 		return 50
 	default:
 		return 0
 	}
 }
 
-func (s *server) CreateCheckbook(ctx context.Context, req *checkbookpb.CheckbookRequest) (*checkbookpb.CheckbookResponse, error) {
+func (s *server) CreateCheckbook(ctx context.Context, req *checkbookpb.CreateCheckbookRequest) (*checkbookpb.CreateCheckbookResponse, error) {
 
 	pagesEnum := req.GetNbPage()
 	nbPages := getNbPages(pagesEnum)
@@ -43,7 +43,7 @@ func (s *server) CreateCheckbook(ctx context.Context, req *checkbookpb.Checkbook
 	checkbookID := int32(rand.Intn(1000))
 	log.Println("Checkbook Id:", checkbookID)
 
-	checkbook := &checkbookpb.CheckbookResponse{NbPage: pagesEnum, AccountId: req.GetAccountId(), CreationDate: creationDate, Id: checkbookID}
+	checkbook := &checkbookpb.CreateCheckbookResponse{NbPage: pagesEnum, AccountId: req.GetAccountId(), CreationDate: creationDate, Id: checkbookID}
 
 	s.db[checkbookID] = checkbook
 
@@ -52,10 +52,10 @@ func (s *server) CreateCheckbook(ctx context.Context, req *checkbookpb.Checkbook
 	return checkbook, nil
 }
 
-func (s *server) GetCheckbooks(ctx context.Context, req *checkbookpb.AccountId) (*checkbookpb.CheckbookList, error) {
+func (s *server) GetCheckbooks(ctx context.Context, req *checkbookpb.GetCheckbooksRequest) (*checkbookpb.GetCheckbooksResponse, error) {
 
 	accountId := req.GetAccountId()
-	var results []*checkbookpb.CheckbookResponse
+	var results []*checkbookpb.CreateCheckbookResponse
 
 	for _, checkbook := range s.db {
 		if checkbook.GetAccountId() == accountId {
@@ -68,7 +68,7 @@ func (s *server) GetCheckbooks(ctx context.Context, req *checkbookpb.AccountId) 
 
 	log.Println("Found", len(results), "checkbooks for account", accountId)
 
-	return &checkbookpb.CheckbookList{
+	return &checkbookpb.GetCheckbooksResponse{
 		Checkbooks: results,
 	}, nil
 }
@@ -84,7 +84,7 @@ func main() {
 	s := grpc.NewServer()
 
 	srv := &server{
-		db: make(map[int32]*checkbookpb.CheckbookResponse),
+		db: make(map[int32]*checkbookpb.CreateCheckbookResponse),
 	}
 
 	checkbookpb.RegisterCheckbookServiceServer(s, srv)

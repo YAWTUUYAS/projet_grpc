@@ -52,6 +52,27 @@ func (s *server) CreateCheckbook(ctx context.Context, req *checkbookpb.Checkbook
 	return checkbook, nil
 }
 
+func (s *server) GetCheckbooks(ctx context.Context, req *checkbookpb.AccountId) (*checkbookpb.CheckbookList, error) {
+
+	accountId := req.GetAccountId()
+	var results []*checkbookpb.CheckbookResponse
+
+	for _, checkbook := range s.db {
+		if checkbook.GetAccountId() == accountId {
+			results = append(results, checkbook)
+		}
+	}
+	if len(results) == 0 {
+		return nil, fmt.Errorf("no checkbooks found for account: %s", accountId)
+	}
+
+	log.Println("Found", len(results), "checkbooks for account", accountId)
+
+	return &checkbookpb.CheckbookList{
+		Checkbooks: results,
+	}, nil
+}
+
 func main() {
 	listener, err := net.Listen("tcp", "localhost:8080")
 

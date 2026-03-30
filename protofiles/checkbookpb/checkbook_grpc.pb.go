@@ -19,6 +19,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CheckbookServiceClient interface {
 	CreateCheckbook(ctx context.Context, in *CheckbookRequest, opts ...grpc.CallOption) (*CheckbookResponse, error)
+	GetCheckbooks(ctx context.Context, in *AccountId, opts ...grpc.CallOption) (*CheckbookList, error)
 }
 
 type checkbookServiceClient struct {
@@ -38,11 +39,21 @@ func (c *checkbookServiceClient) CreateCheckbook(ctx context.Context, in *Checkb
 	return out, nil
 }
 
+func (c *checkbookServiceClient) GetCheckbooks(ctx context.Context, in *AccountId, opts ...grpc.CallOption) (*CheckbookList, error) {
+	out := new(CheckbookList)
+	err := c.cc.Invoke(ctx, "/protofiles.CheckbookService/GetCheckbooks", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CheckbookServiceServer is the server API for CheckbookService service.
 // All implementations should embed UnimplementedCheckbookServiceServer
 // for forward compatibility
 type CheckbookServiceServer interface {
 	CreateCheckbook(context.Context, *CheckbookRequest) (*CheckbookResponse, error)
+	GetCheckbooks(context.Context, *AccountId) (*CheckbookList, error)
 }
 
 // UnimplementedCheckbookServiceServer should be embedded to have forward compatible implementations.
@@ -51,6 +62,9 @@ type UnimplementedCheckbookServiceServer struct {
 
 func (UnimplementedCheckbookServiceServer) CreateCheckbook(context.Context, *CheckbookRequest) (*CheckbookResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateCheckbook not implemented")
+}
+func (UnimplementedCheckbookServiceServer) GetCheckbooks(context.Context, *AccountId) (*CheckbookList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetCheckbooks not implemented")
 }
 
 // UnsafeCheckbookServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -82,6 +96,24 @@ func _CheckbookService_CreateCheckbook_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CheckbookService_GetCheckbooks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AccountId)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CheckbookServiceServer).GetCheckbooks(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/protofiles.CheckbookService/GetCheckbooks",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CheckbookServiceServer).GetCheckbooks(ctx, req.(*AccountId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // CheckbookService_ServiceDesc is the grpc.ServiceDesc for CheckbookService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -92,6 +124,10 @@ var CheckbookService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateCheckbook",
 			Handler:    _CheckbookService_CreateCheckbook_Handler,
+		},
+		{
+			MethodName: "GetCheckbooks",
+			Handler:    _CheckbookService_GetCheckbooks_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -17,10 +17,13 @@ func main() {
 	}
 
 	defer cc.Close()
+
 	c := checkbookpb.NewCheckbookServiceClient(cc)
 
 	createCheckbook(checkbookpb.Pages_TWENTY_FIVE, "account_001", c)
-	createCheckbook(checkbookpb.Pages_FIFTY, "account_002", c)
+	createCheckbook(checkbookpb.Pages_FIFTY, "account_001", c)
+
+	getCheckbooks("account_001", c)
 }
 
 func createCheckbook(nbPage checkbookpb.Pages, accountId string, c checkbookpb.CheckbookServiceClient) {
@@ -37,4 +40,23 @@ func createCheckbook(nbPage checkbookpb.Pages, accountId string, c checkbookpb.C
 	}
 
 	log.Println(res.AccountId, res.CreationDate, res.Id, res.NbPage)
+}
+
+func getCheckbooks(accountId string, c checkbookpb.CheckbookServiceClient) {
+	log.Println("fetching checkbooks for:", accountId)
+
+	res, err := c.GetCheckbooks(context.Background(), &checkbookpb.AccountId{
+		AccountId: accountId,
+	})
+
+	if err != nil {
+		log.Println("error:", err)
+		return
+	}
+
+	for _, cb := range res.Checkbooks {
+		log.Println("ID:", cb.Id,
+			"Pages:", cb.NbPage,
+			"Date:", cb.CreationDate)
+	}
 }

@@ -24,6 +24,15 @@ message CheckbookResponse {
     int32 id = 4;
 }
 
+message CheckbookList {
+  repeated CheckbookResponse checkbooks = 1;
+}
+
+message AccountId {
+    string accountId = 1;
+}
+
 service CheckbookService {
     rpc CreateCheckbook(CheckbookRequest) returns (CheckbookResponse);
+    rpc GetCheckbooks(AccountId) returns (CheckbookList);
 }

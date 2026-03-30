@@ -24,6 +24,9 @@ func main() {
 	createCheckbook(checkbookpb.Pages_PAGES_FIFTY, "account_001", c)
 
 	getCheckbooks("account_001", c)
+
+	updateCheckbook(9, "account_002", checkbookpb.Pages_PAGES_FIFTY, c)
+	getCheckbooks("account_002", c)
 }
 
 func createCheckbook(nbPage checkbookpb.Pages, accountId string, c checkbookpb.CheckbookServiceClient) {
@@ -59,4 +62,19 @@ func getCheckbooks(accountId string, c checkbookpb.CheckbookServiceClient) {
 			"Pages:", cb.NbPage,
 			"Date:", cb.CreationDate)
 	}
+}
+
+func updateCheckbook(checkbookId int32, accountId string, nbPage checkbookpb.Pages, c checkbookpb.CheckbookServiceClient) {
+	log.Println("updating checkbook for id: ", checkbookId)
+
+	res, err := c.UpdateCheckbook(context.Background(), &checkbookpb.UpdateCheckbookRequest{
+		Id: checkbookId, AccountId: accountId, NbPage: nbPage,
+	})
+
+	if err != nil {
+		log.Println("error:", err)
+		return
+	}
+
+	log.Println(res.AccountId, res.Id, res.NbPage)
 }

@@ -40,7 +40,7 @@ func (s *server) CreateCheckbook(ctx context.Context, req *checkbookpb.CreateChe
 	creationDate := timestamppb.Now()
 	log.Println("Creation Date:", creationDate)
 
-	checkbookID := int32(rand.Intn(1000))
+	checkbookID := int32(rand.Intn(10))
 	log.Println("Checkbook Id:", checkbookID)
 
 	checkbook := &checkbookpb.CreateCheckbookResponse{NbPage: pagesEnum, AccountId: req.GetAccountId(), CreationDate: creationDate, Id: checkbookID}
@@ -71,6 +71,31 @@ func (s *server) GetCheckbooks(ctx context.Context, req *checkbookpb.GetCheckboo
 	return &checkbookpb.GetCheckbooksResponse{
 		Checkbooks: results,
 	}, nil
+}
+
+func (s *server) UpdateCheckbook(ctx context.Context, req *checkbookpb.UpdateCheckbookRequest) (*checkbookpb.UpdateCheckbookResponse, error) {
+	accountId := req.GetAccountId()
+	nbPages := req.GetNbPage()
+	checkbookId := req.GetId()
+
+	for _, checkbook := range s.db {
+		if checkbook.GetId() == checkbookId {
+			if checkbook.GetAccountId() != accountId {
+				s.db[checkbookId].AccountId = accountId
+
+			}
+			if checkbook.GetNbPage() != nbPages {
+				s.db[checkbookId].NbPage = nbPages
+
+			}
+			updatedcheckbook := &checkbookpb.UpdateCheckbookResponse{NbPage: nbPages, AccountId: accountId, CreationDate: checkbook.CreationDate, Id: checkbookId}
+			log.Println("Updated checkbook for id", checkbookId)
+			return updatedcheckbook, nil
+		}
+	}
+
+	return nil, fmt.Errorf("no checkbooks found for id: %d or no need to update", checkbookId)
+
 }
 
 func main() {

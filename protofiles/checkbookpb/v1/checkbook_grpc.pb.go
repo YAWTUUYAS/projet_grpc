@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion7
 type CheckbookServiceClient interface {
 	CreateCheckbook(ctx context.Context, in *CreateCheckbookRequest, opts ...grpc.CallOption) (*CreateCheckbookResponse, error)
 	GetCheckbooks(ctx context.Context, in *GetCheckbooksRequest, opts ...grpc.CallOption) (*GetCheckbooksResponse, error)
+	UpdateCheckbook(ctx context.Context, in *UpdateCheckbookRequest, opts ...grpc.CallOption) (*UpdateCheckbookResponse, error)
 }
 
 type checkbookServiceClient struct {
@@ -48,12 +49,22 @@ func (c *checkbookServiceClient) GetCheckbooks(ctx context.Context, in *GetCheck
 	return out, nil
 }
 
+func (c *checkbookServiceClient) UpdateCheckbook(ctx context.Context, in *UpdateCheckbookRequest, opts ...grpc.CallOption) (*UpdateCheckbookResponse, error) {
+	out := new(UpdateCheckbookResponse)
+	err := c.cc.Invoke(ctx, "/protofiles.checkbookpb.v1.CheckbookService/UpdateCheckbook", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CheckbookServiceServer is the server API for CheckbookService service.
 // All implementations should embed UnimplementedCheckbookServiceServer
 // for forward compatibility
 type CheckbookServiceServer interface {
 	CreateCheckbook(context.Context, *CreateCheckbookRequest) (*CreateCheckbookResponse, error)
 	GetCheckbooks(context.Context, *GetCheckbooksRequest) (*GetCheckbooksResponse, error)
+	UpdateCheckbook(context.Context, *UpdateCheckbookRequest) (*UpdateCheckbookResponse, error)
 }
 
 // UnimplementedCheckbookServiceServer should be embedded to have forward compatible implementations.
@@ -65,6 +76,9 @@ func (UnimplementedCheckbookServiceServer) CreateCheckbook(context.Context, *Cre
 }
 func (UnimplementedCheckbookServiceServer) GetCheckbooks(context.Context, *GetCheckbooksRequest) (*GetCheckbooksResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCheckbooks not implemented")
+}
+func (UnimplementedCheckbookServiceServer) UpdateCheckbook(context.Context, *UpdateCheckbookRequest) (*UpdateCheckbookResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateCheckbook not implemented")
 }
 
 // UnsafeCheckbookServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -114,6 +128,24 @@ func _CheckbookService_GetCheckbooks_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CheckbookService_UpdateCheckbook_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateCheckbookRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CheckbookServiceServer).UpdateCheckbook(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/protofiles.checkbookpb.v1.CheckbookService/UpdateCheckbook",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CheckbookServiceServer).UpdateCheckbook(ctx, req.(*UpdateCheckbookRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // CheckbookService_ServiceDesc is the grpc.ServiceDesc for CheckbookService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -128,6 +160,10 @@ var CheckbookService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetCheckbooks",
 			Handler:    _CheckbookService_GetCheckbooks_Handler,
+		},
+		{
+			MethodName: "UpdateCheckbook",
+			Handler:    _CheckbookService_UpdateCheckbook_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -32,7 +32,21 @@ message GetCheckbooksRequest {
     string account_id = 1;
 }
 
+message UpdateCheckbookRequest{
+    int32 id = 1;
+    Pages nb_page = 2;
+    string account_id = 3;
+}
+
+message UpdateCheckbookResponse{
+    Pages nb_page = 1;
+    string account_id = 2;
+    google.protobuf.Timestamp creation_date = 3;
+    int32 id = 4;
+}
+
 service CheckbookService {
     rpc CreateCheckbook(CreateCheckbookRequest) returns (CreateCheckbookResponse);
     rpc GetCheckbooks(GetCheckbooksRequest) returns (GetCheckbooksResponse);
+    rpc UpdateCheckbook(UpdateCheckbookRequest) returns (UpdateCheckbookResponse);
 }

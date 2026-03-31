@@ -12,26 +12,37 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+type CheckbookPageNumber int32
+
+const (
+	checkbook_page_TWENTY_FIVE CheckbookPageNumber = 25
+	checkbook_page_FIFTY       CheckbookPageNumber = 50
+	checkbook_page_UNDEFINED   CheckbookPageNumber = 0
+)
+
 type server struct {
 	checkbookpb.UnimplementedCheckbookServiceServer
 	db map[int32]*checkbookpb.CreateCheckbookResponse
 }
 
-func getNbPages(p checkbookpb.Pages) int32 {
+func getNbPages(p checkbookpb.Pages) (CheckbookPageNumber, error) {
 	switch p {
 	case checkbookpb.Pages_PAGES_TWENTY_FIVE:
-		return 25
+		return 25, nil
 	case checkbookpb.Pages_PAGES_FIFTY:
-		return 50
+		return 50, nil
 	default:
-		return 0
+		return checkbook_page_UNDEFINED, fmt.Errorf("undefined pages number")
 	}
 }
 
 func (s *server) CreateCheckbook(ctx context.Context, req *checkbookpb.CreateCheckbookRequest) (*checkbookpb.CreateCheckbookResponse, error) {
-
 	pagesEnum := req.GetNbPage()
-	nbPages := getNbPages(pagesEnum)
+	nbPages, err := getNbPages(pagesEnum)
+
+	if err != nil {
+		return nil, err
+	}
 
 	log.Println("Pages enum:", pagesEnum)
 	log.Println("Number Of Pages:", nbPages)
